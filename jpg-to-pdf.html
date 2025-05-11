@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern JPG to PDF Converter | Black & Yellow Cloud</title>
+    <meta name="description" content="Convert JPG images from local files, Dropbox, or Google Drive to PDF documents instantly. Modern black and yellow design.">
+    <meta name="keywords" content="Convert JPG to PDF, Dropbox, Google Drive, Free Online JPG to PDF Converter, Merge JPG to PDF, High-Quality JPG to PDF, Black Yellow Theme">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="YOUR_DROPBOX_APP_KEY"></script>
+
+    <script src="https://apis.google.com/js/api.js" async defer onload="onGapiLoad"></script>
+
+    <style>
+        /* Basic Reset and Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, Arial, sans-serif; /* Modern Font Stack */
+        }
+
+        /* Black & Yellow Theme */
+        :root {
+            --bg-color: #1a1a1a; /* Dark Background */
+            --container-bg: #2b2b2b; /* Slightly Lighter Container */
+            --primary-yellow: #ffd700; /* Bright Yellow Accent */
+            --text-color: #f0f0f0; /* Light Text */
+            --text-dark: #1a1a1a; /* Dark Text for Yellow Backgrounds */
+            --border-color: #444;
+            --border-hover-color: var(--primary-yellow);
+            --button-hover-bg: #e6c300; /* Darker Yellow on Hover */
+            --loading-overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 20px auto;
+            position: relative; /* Needed for loading overlay */
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--loading-overlay-bg);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 12px; /* Match converter box */
+            color: var(--primary-yellow);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-yellow);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-yellow);
+        }
+        .header h1 {
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .converter-box {
+            background: var(--container-bg);
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 50px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .drop-zone:hover {
+            border-color: var(--border-hover-color);
+            background-color: rgba(255, 215, 0, 0.05);
+        }
+        .drop-zone p {
+             margin-bottom: 15px;
+             font-size: 1.1em;
+             color: #aaa;
+        }
+
+        #fileInput { display: none; }
+
+        .button { /* General Button Styles */
+            background: var(--primary-yellow);
+            color: var(--text-dark);
+            font-weight: bold;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-flex; /* Use flex for icon alignment */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1em;
+            gap: 8px; /* Space between icon and text */
+        }
+         .button svg {
+             width: 18px;
+             height: 18px;
+             fill: currentColor; /* Icon color matches text */
+         }
+
+        .button:hover {
+            background: var(--button-hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .button:disabled {
+             background-color: #555;
+             color: #999;
+             cursor: not-allowed;
+             transform: none;
+             opacity: 0.7;
+        }
+
+        .button.secondary { /* For less prominent buttons */
+             background: none;
+             border: 2px solid var(--primary-yellow);
+             color: var(--primary-yellow);
+        }
+         .button.secondary:hover {
+             background: rgba(255, 215, 0, 0.1);
+             color: var(--primary-yellow);
+             transform: translateY(-2px);
+        }
+
+        #fileList {
+            margin: 10px 0 25px 0; /* Adjust margin */
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 15px; /* More padding */
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            border: 1px solid var(--border-color); /* Add subtle border */
+        }
+        #fileList div {
+             padding: 8px 5px; /* More padding */
+             border-bottom: 1px solid var(--border-color);
+             font-size: 0.95em; /* Slightly larger */
+             display: flex;
+             justify-content: space-between; /* Space out name and size */
+             word-break: break-all; /* Prevent long names from overflowing badly */
+        }
+        #fileList div span:last-child {
+            color: #aaa; /* Dim file size */
+            white-space: nowrap; /* Keep size on one line */
+            margin-left: 10px;
+        }
+         #fileList div:last-child {
+             border-bottom: none;
+         }
+
+        .file-list-header {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--primary-yellow);
+        }
+
+        .action-buttons {
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .cloud-options {
+            display: flex;
+            flex-direction: column; /* Stack vertically */
+            align-items: center; /* Center buttons */
+            gap: 15px;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+            font-size: 0.9em;
+            color: #ccc; /* Lighter text for section header */
+        }
+        .cloud-options p {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .cloud-buttons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 15px;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .container { margin: 10px; padding: 15px; }
+            .converter-box { padding: 20px; }
+            .header h1 { font-size: 2em; }
+            .drop-zone { padding: 30px 15px; }
+            .button { padding: 10px 20px; font-size: 0.9em; gap: 5px; }
+            .button svg { width: 16px; height: 16px;}
+             .action-buttons { flex-direction: column; gap: 10px; }
+             .cloud-buttons-container { flex-direction: column; width: 100%; }
+             .cloud-options button { width: 80%; } /* Make cloud buttons wider on mobile */
+             #fileList div { flex-direction: column; align-items: flex-start; gap: 3px;}
+             #fileList div span:last-child { margin-left: 0;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+         <div id="loadingOverlay">
+             <div class="spinner"></div>
+             <p id="loadingMessage">Loading...</p>
+         </div>
+
+        <header class="header">
+            <h1>JPG to PDF Converter</h1>
+            <p>Convert JPG images to PDF documents instantly</p>
+        </header>
+
+        <div class="converter-box" itemscope itemtype="https://schema.org/WebApplication">
+            <meta itemprop="name" content="JPG to PDF Converter">
+            <meta itemprop="description" content="Free online tool to convert JPG images from local files, Dropbox, or Google Drive to PDF documents with a modern black and yellow design.">
+
+            <div class="drop-zone" id="dropZone">
+                <p>Drag & Drop JPG files here</p>
+                <p>or</p>
+                <input type="file" id="fileInput" accept="image/jpeg,image/jpg" multiple>
+                <label for="fileInput" class="button">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+                    Select Local JPG Files
+                </label>
+            </div>
+
+             <div class="cloud-options">
+                 <p>Or select files from:</p>
+                 <div class="cloud-buttons-container">
+                     <button class="button secondary" onclick="handleDropbox()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8.01 4.555 4.005 7.11 8.01 9.665 12.015 7.11 8.01 4.555Zm-4.005 2.555 4.005 2.555 4.005-2.555-4.005-2.555-4.005 2.555Zm0 4.66 4.005-2.555 4.005 2.555-4.005 2.555-4.005-2.555Z"/></svg>
+                        Dropbox
+                     </button>
+                     <button class="button secondary" onclick="handleGoogleDrive()">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M15.545 6.558a9.4 9.4 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.7 7.7 0 0 1 5.352 2.082l-2.284 2.284A4.35 4.35 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.25C3.216 7.088 2.91 7.5 2.713 8c.197.5.503.912.8 1.25C4.14 11.191 5.913 12.834 8 12.834c1.388 0 2.642-.56 3.547-1.479l2.284 2.284A7.96 7.96 0 0 1 8 16Z"/></svg>
+                         Google Drive
+                     </button>
+                 </div>
+            </div>
+
+            <div id="fileListContainer" style="display: none;">
+                 <p class="file-list-header">Selected Files:</p>
+                 <div id="fileList"></div>
+            </div>
+
+            <div class="action-buttons" id="actionButtons">
+                 <button class="button" id="convertBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 1h14v14H1V1zm4 0v14h8V1H5zM1 5h14v8H1V5zm4 0v8h8V5H5z"/></svg> Convert to PDF
+                 </button>
+                 <button class="button" id="downloadBtn" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                    Download PDF
+                 </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Your Website. Cloud enabled JPG to PDF converter.</p>
+            <p style="font-size: 0.8em; color: #666;">Ensure API keys and authorized domains are correctly configured.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- Config ---
+        const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY'; // <-- REPLACE
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // <-- REPLACE
+        const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.readonly'; // Scope for reading files
+
+        // Ensure jsPDF is loaded
+        if (typeof window.jspdf === 'undefined') {
+            console.error("Error: jsPDF library not loaded.");
+            alert("Error: jsPDF library not loaded. Cannot proceed.");
+        }
+        const { jsPDF } = window.jspdf;
+
+        // DOM Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileListContainer = document.getElementById('fileListContainer');
+        const fileListDiv = document.getElementById('fileList');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const actionButtons = document.getElementById('actionButtons');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingMessage = document.getElementById('loadingMessage');
+
+        // --- State ---
+        let selectedFileObjects = []; // Holds { name: string, size: number, dataUrl?: string, source: 'local'|'dropbox'|'google', fetchUrl?: string, token?: string }
+        let pdfDoc = null;
+        let gapiLoaded = false;
+        let googleAuthInstance = null;
+        let googlePickerApiLoaded = false;
+
+        // --- Utility Functions ---
+        function showLoading(message = "Loading...") {
+            loadingMessage.textContent = message;
+            loadingOverlay.style.display = 'flex';
+        }
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+        function formatBytes(bytes, decimals = 2) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+        function escapeHTML(str) {
+             const div = document.createElement('div');
+             div.appendChild(document.createTextNode(str || ''));
+             return div.innerHTML;
+        }
+
+        // --- File Handling ---
+        function handleFiles(files) { // Handles local File objects
+            if (!files || files.length === 0) return;
+            const newFileObjects = Array.from(files).map(file => ({
+                name: file.name,
+                size: file.size,
+                source: 'local',
+                fileObject: file // Keep original File object for local reading
+            }));
+            addFileObjects(newFileObjects);
+        }
+
+        function addFileObjects(newObjects) {
+             // Avoid duplicates by name (simple check)
+             const existingNames = selectedFileObjects.map(f => f.name);
+             const uniqueNewObjects = newObjects.filter(n => !existingNames.includes(n.name));
+
+             selectedFileObjects = [...selectedFileObjects, ...uniqueNewObjects];
+             updateFileListDisplay();
+             showControls();
+        }
+
+        function updateFileListDisplay() {
+             if (selectedFileObjects.length > 0) {
+                 fileListDiv.innerHTML = selectedFileObjects.map(f =>
+                    `<div>
+                        <span>${escapeHTML(f.name)}</span>
+                        <span>${formatBytes(f.size)} (${f.source})</span>
+                    </div>`
+                ).join('');
+                fileListContainer.style.display = 'block';
+             } else {
+                 fileListContainer.style.display = 'none';
+                 fileListDiv.innerHTML = '';
+             }
+        }
+
+        function showControls() {
+             if (selectedFileObjects.length > 0) {
+                 actionButtons.style.display = 'flex';
+                 downloadBtn.style.display = 'none';
+                 convertBtn.disabled = false;
+                 convertBtn.textContent = 'Convert to PDF';
+             } else {
+                  actionButtons.style.display = 'none';
+             }
+             pdfDoc = null; // Reset previous PDF if new files are added/changed
+        }
+
+        // --- Drag & Drop Event Handlers ---
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-hover-color)';
+            dropZone.style.backgroundColor = 'rgba(255, 215, 0, 0.05)';
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = 'var(--border-color)';
+             dropZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+            const jpgFiles = Array.from(e.dataTransfer.files).filter(file => file.type === 'image/jpeg' || file.type === 'image/jpg');
+            if(jpgFiles.length > 0) {
+                 handleFiles(jpgFiles);
+            } else if (e.dataTransfer.files.length > 0) {
+                alert("Please drop only JPG or JPEG files.");
+            }
+        });
+
+        // --- File Input Change Handler ---
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        // --- Fetch and Convert to Data URL ---
+        async function fetchAndGetDataUrl(url, source, token = null) {
+            showLoading(`Workspaceing from ${source}...`);
+            try {
+                const headers = {};
+                if (source === 'google' && token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                // Note: Dropbox direct links might not need auth headers but could expire.
+                // CORS might still be an issue depending on the link type and server setup.
+                const response = await fetch(url, { headers });
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch from ${source}: ${response.statusText}`);
+                }
+                const blob = await response.blob();
+                // Ensure the fetched blob is actually an image before proceeding
+                if (!blob.type.startsWith('image/')) {
+                    throw new Error(`Workspaceed file from ${source} is not a valid image type (${blob.type})`);
+                }
+                return await readFileAsDataURL(blob); // Reuse existing function
+            } finally {
+                 hideLoading(); // Ensure loading is hidden even on error
+            }
+        }
+
+         // --- Read File/Blob as Data URL ---
+         function readFileAsDataURL(fileOrBlob) {
+             return new Promise((resolve, reject) => {
+                 const reader = new FileReader();
+                 reader.onload = (event) => resolve(event.target.result);
+                 reader.onerror = (error) => reject(error);
+                 reader.readAsDataURL(fileOrBlob);
+             });
+         }
+
+         // --- Get Image Dimensions ---
+         function getImageDimensions(dataUrl) {
+             return new Promise((resolve, reject) => {
+                 const img = new Image();
+                 img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                 img.onerror = (error) => {
+                     console.error("Error loading image for dimension check:", error);
+                     reject(new Error("Could not load image data to get dimensions."));
+                 };
+                 img.src = dataUrl;
+             });
+         }
+
+        // --- Convert to PDF Logic ---
+        async function convertToPDF() {
+            if (selectedFileObjects.length === 0) {
+                alert("Please select files first.");
+                return;
+            }
+
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Converting...';
+            downloadBtn.style.display = 'none';
+            showLoading("Initializing PDF...");
+
+            try {
+                pdfDoc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = pdfDoc.internal.pageSize.getWidth();
+                const pageHeight = pdfDoc.internal.pageSize.getHeight();
+                const margin = 10; // mm
+
+                for (let i = 0; i < selectedFileObjects.length; i++) {
+                    const fileObj = selectedFileObjects[i];
+                    showLoading(`Processing: ${escapeHTML(fileObj.name)} (${i + 1}/${selectedFileObjects.length})`);
+
+                    let imageDataUrl;
+                    try {
+                        if (fileObj.source === 'local' && fileObj.fileObject) {
+                            imageDataUrl = await readFileAsDataURL(fileObj.fileObject);
+                        } else if ((fileObj.source === 'dropbox' || fileObj.source === 'google') && fileObj.fetchUrl) {
+                            imageDataUrl = await fetchAndGetDataUrl(fileObj.fetchUrl, fileObj.source, fileObj.token);
+                        } else if (fileObj.dataUrl) { // Already fetched? (Might happen with retries)
+                             imageDataUrl = fileObj.dataUrl;
+                        }
+                        else {
+                            throw new Error(`Missing data or URL for file: ${fileObj.name}`);
+                        }
+
+                        // Store dataUrl in case of retry needed? Maybe not necessary here.
+                        // fileObj.dataUrl = imageDataUrl;
+
+                        const imgProps = await getImageDimensions(imageDataUrl);
+
+                        let imgWidth = imgProps.width;
+                        let imgHeight = imgProps.height;
+                        const aspectRatio = imgWidth / imgHeight;
+
+                        let pdfImgWidth = pageWidth - 2 * margin;
+                        let pdfImgHeight = pdfImgWidth / aspectRatio;
+
+                        if (pdfImgHeight > pageHeight - 2 * margin) {
+                            pdfImgHeight = pageHeight - 2 * margin;
+                            pdfImgWidth = pdfImgHeight * aspectRatio;
+                        }
+
+                        const x = (pageWidth - pdfImgWidth) / 2;
+                        const y = margin;
+
+                        if (i > 0) pdfDoc.addPage();
+                        pdfDoc.addImage(imageDataUrl, 'JPEG', x, y, pdfImgWidth, pdfImgHeight);
+
+                    } catch(imageError) {
+                         console.error(`Error processing file ${fileObj.name}:`, imageError);
+                         // Optionally skip this file and continue, or stop the whole process
+                         alert(`Skipping file "${escapeHTML(fileObj.name)}" due to error: ${imageError.message}`);
+                         // To stop entirely: throw new Error(`Failed to process file ${fileObj.name}. ${imageError.message}`);
+                    }
+                }
+
+                hideLoading();
+                convertBtn.textContent = 'Converted!';
+                downloadBtn.style.display = 'inline-flex'; // Show download button
+                actionButtons.style.display = 'flex';
+
+            } catch (error) {
+                hideLoading();
+                console.error('Error during PDF conversion:', error);
+                alert(`An error occurred during PDF creation: ${error.message || error}. Please check the console.`);
+                convertBtn.textContent = 'Convert to PDF';
+                convertBtn.disabled = false; // Re-enable on error
+                pdfDoc = null; // Discard potentially incomplete PDF
+            }
+        }
+
+        // --- Download PDF ---
+        function downloadPDF() {
+            if (pdfDoc) {
+                try {
+                    pdfDoc.save('converted-images.pdf');
+                } catch (error) {
+                     console.error("Error saving PDF:", error);
+                     alert("Could not save the PDF. Please try converting again.");
+                }
+            } else {
+                alert("No PDF generated or conversion failed. Please convert the files first.");
+            }
+        }
+
+        // --- Dropbox Integration ---
+        function handleDropbox() {
+            if (typeof Dropbox === 'undefined' || !Dropbox) {
+                 alert("Dropbox Chooser script not loaded. Check your App Key and script tag.");
+                 return;
+            }
+
+            const options = {
+                success: (files) => {
+                    const dropboxFileObjects = files.map(file => ({
+                        name: file.name,
+                        size: file.bytes,
+                        source: 'dropbox',
+                        fetchUrl: file.link // Use the direct link provided by Chooser
+                        // Note: Dropbox 'direct' links are temporary and might require CORS handling depending on server config.
+                    }));
+                     addFileObjects(dropboxFileObjects);
+                },
+                linkType: "direct", // Get direct download links (may be temporary)
+                multiselect: true,
+                extensions: ['.jpg', '.jpeg'],
+                folderselect: false,
+            };
+            Dropbox.choose(options);
+        }
+
+        // --- Google Drive Integration ---
+        // Called when GAPI script loads
+        function onGapiLoad() {
+            gapi.load('client:auth2:picker', initializeGapiClient); // Load necessary modules
+        }
+
+        // Initialize GAPI client and Auth
+        async function initializeGapiClient() {
+            if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID' ||
+                !GOOGLE_API_KEY || GOOGLE_API_KEY === 'YOUR_GOOGLE_API_KEY') {
+                 console.warn("Google API Key or Client ID is missing/not replaced. Google Drive integration will be disabled.");
+                 return; // Don't initialize if keys are missing
+            }
+            try {
+                 await gapi.client.init({
+                     apiKey: GOOGLE_API_KEY,
+                     clientId: GOOGLE_CLIENT_ID,
+                     scope: GOOGLE_SCOPES,
+                     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] // Needed for potential future file gets
+                 });
+                 googleAuthInstance = gapi.auth2.getAuthInstance();
+                 gapiLoaded = true;
+                 // Check if picker API loaded (it should have been requested in gapi.load)
+                 if (typeof google !== 'undefined' && google.picker) {
+                     googlePickerApiLoaded = true;
+                 } else {
+                      console.error("Google Picker API failed to load.");
+                 }
+
+                 console.log("Google API Client Initialized");
+
+            } catch (error) {
+                 console.error("Error initializing Google API Client:", error);
+                 alert("Failed to initialize Google Drive integration. Check console for details.");
+            }
+        }
+
+        // Trigger Google Drive Picker
+        function handleGoogleDrive() {
+            if (!gapiLoaded || !googleAuthInstance) {
+                alert("Google API client is not initialized. Check configuration or wait a moment.");
+                return;
+            }
+             if (!googlePickerApiLoaded) {
+                alert("Google Picker API failed to load. Cannot open picker.");
+                return;
+            }
+
+            const showPicker = () => {
+                const accessToken = googleAuthInstance.currentUser.get().getAuthResponse().access_token;
+                if (!accessToken) {
+                    alert("Could not get Google access token.");
+                    return;
+                }
+
+                const view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES); // Show images
+                view.setMimeTypes("image/jpeg"); // Filter for JPEG
+
+                const picker = new google.picker.PickerBuilder()
+                    .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+                    .setDeveloperKey(GOOGLE_API_KEY)
+                    .setAppId(GOOGLE_CLIENT_ID.split('-')[0]) // AppId is usually the numeric part before the first hyphen
+                    .setOAuthToken(accessToken)
+                    .addView(view)
+                    .setCallback(googlePickerCallback)
+                    .build();
+                picker.setVisible(true);
+            };
+
+            // Check if signed in, prompt if not
+            if (!googleAuthInstance.isSignedIn.get()) {
+                googleAuthInstance.signIn().then(showPicker, (err) => {
+                     console.error("Google Sign-In Error:", err);
+                     alert("Google Sign-In failed. Please try again.");
+                });
+            } else {
+                showPicker();
+            }
+        }
+
+        // Callback for Google Picker
+        function googlePickerCallback(data) {
+            if (data.action === google.picker.Action.PICKED) {
+                const googleFileObjects = data.docs.map(doc => {
+                    // IMPORTANT: The 'url' provided might be the Drive web URL, not a direct download link.
+                    // A robust solution uses the doc.id with the Drive API files.get?alt=media
+                    // For simplicity here, we construct a *potential* download link.
+                    // This requires drive.readonly scope AND Drive API to be enabled.
+                    const downloadUrl = `https://www.googleapis.com/drive/v3/files/${doc.id}?alt=media`;
+
+                    return {
+                        name: doc.name,
+                        size: doc.sizeBytes,
+                        source: 'google',
+                        fetchUrl: downloadUrl, // URL to fetch using auth token
+                        token: gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token
+                    };
+                });
+                addFileObjects(googleFileObjects);
+            } else if (data.action === google.picker.Action.CANCEL) {
+                console.log("Google Picker cancelled.");
+            }
+        }
+
+        // --- Event Listener Assignment ---
+        convertBtn.addEventListener('click', convertToPDF);
+        downloadBtn.addEventListener('click', downloadPDF);
+
+        // Initial UI setup
+        hideLoading();
+        showControls(); // Hide buttons initially if no files
+
+    </script>
+</body>
+</html>
