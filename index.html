@@ -1,4 +1,467 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One PDF Tools</title>
+    <style>
+        /* --- General Styles & Default (Dark) Theme --- */
+        :root {
+            --primary-black: #1a1a1a;
+            --primary-yellow: #ffd700;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+            --card-bg-dark: #2c2c2c;
+            --border-dark: #444444;
+            --header-bg-dark: #000000;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--primary-black);
+            color: var(--text-light);
+            transition: background-color 0.7s ease, color 0.7s ease;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Header --- */
+        .site-header {
+            background-color: var(--header-bg-dark);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--primary-yellow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.5s ease;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-yellow);
+        }
+
+        .theme-toggle-button {
+            background-color: var(--primary-yellow);
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 18px;
+            cursor: pointer;
+            border-radius: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle-button:hover {
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .theme-toggle-button .icon {
+            margin-right: 8px;
+            /* Simple sun/moon icon with CSS */
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--text-dark);
+            position: relative;
+            transition: background-color 0.3s ease, transform 0.4s ease;
+        }
+
+
+        /* --- Main Content Area --- */
+        main {
+            padding: 30px 0;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: var(--primary-yellow);
+        }
+
+        /* --- Tool Grid --- */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background-color: var(--card-bg-dark);
+            border: 1px solid var(--border-dark);
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border-color 0.5s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-yellow);
+        }
+
+        .tool-card .tool-icon { /* Placeholder for actual icons */
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--primary-yellow);
+            transition: color 0.5s ease;
+        }
+
+        .tool-card h3 {
+            font-size: 1.3em;
+            color: var(--primary-yellow);
+            margin-bottom: 10px;
+            transition: color 0.5s ease;
+        }
+
+        .tool-card p {
+            font-size: 0.9em;
+            color: #cccccc; /* Lighter text for description */
+            line-height: 1.5;
+            transition: color 0.5s ease;
+        }
+
+        /* --- Footer --- */
+        .site-footer {
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 40px;
+            background-color: var(--header-bg-dark);
+            border-top: 3px solid var(--primary-yellow);
+            font-size: 0.9em;
+            transition: background-color 0.5s ease;
+        }
+
+        /* === Animated Theme (When "ON") === */
+        body.animated-theme {
+            --primary-black: #f0f0f0; /* Light background for animated theme */
+            --primary-yellow-animated-start: #ffeb3b;
+            --primary-yellow-animated-mid: #ffc107;
+            --primary-yellow-animated-end: #ff9800;
+            --text-light: #222222; /* Dark text for animated theme */
+            --text-dark: #ffffff;
+            --card-bg-dark: #ffffff;
+            --border-dark: #dddddd;
+            --header-bg-dark: #333333; /* Darker header for contrast */
+
+            background: linear-gradient(135deg,
+                var(--primary-yellow-animated-start),
+                var(--primary-yellow-animated-mid),
+                var(--primary-yellow-animated-end),
+                #ff5722, /* Adding more vibrant colors */
+                #e91e63,
+                #9c27b0
+            );
+            background-size: 600% 600%;
+            animation: gradientFlow 20s ease infinite;
+            color: var(--text-light);
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animated-theme .site-header {
+            background-color: var(--header-bg-dark);
+            border-bottom-color: var(--primary-yellow-animated-mid);
+        }
+
+        .animated-theme .logo {
+            color: var(--primary-yellow-animated-mid);
+        }
+
+        .animated-theme .theme-toggle-button {
+            background-color: var(--primary-black); /* Dark button on light/animated theme */
+            color: var(--primary-yellow-animated-mid); /* Yellow text */
+        }
+
+        .animated-theme .theme-toggle-button .icon {
+            background-color: var(--primary-yellow-animated-mid); /* Moon becomes sun-like */
+            transform: rotate(180deg); /* Simple animation for icon */
+        }
+         .animated-theme .theme-toggle-button .icon::before { /* Simulate sun rays */
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, var(--primary-yellow-animated-mid) 35%, var(--primary-yellow-animated-mid) 45%, transparent 50%);
+            animation: spinRays 10s linear infinite;
+        }
+
+        @keyframes spinRays {
+            to { transform: rotate(360deg); }
+        }
+
+
+        .animated-theme .main-title {
+            color: #111; /* Darker title for better contrast on animated background */
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .animated-theme .tool-card {
+            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white cards */
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .animated-theme .tool-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-yellow-animated-mid);
+        }
+
+        .animated-theme .tool-card .tool-icon {
+            color: #e65100; /* A deep orange for icons on animated theme */
+        }
+
+        .animated-theme .tool-card h3 {
+            color: #333;
+        }
+
+        .animated-theme .tool-card p {
+            color: #555;
+        }
+
+        .animated-theme .site-footer {
+            background-color: var(--header-bg-dark);
+            border-top-color: var(--primary-yellow-animated-mid);
+            color: #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <div class="logo">PDFMasters</div>
+            <button id="theme-toggle" class="theme-toggle-button" aria-label="Toggle Theme">
+                <span class="icon"></span>
+                <span class="theme-text">Animate Theme</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="main-title">Your One-Stop PDF Toolkit</h1>
+
+            <div class="tool-grid">
+                <a href="merge-pdf.html" class="tool-card" data-tool="merge-pdf">
+                    <div class="tool-icon">➕</div>
+                    <h3>Merge PDF</h3>
+                    <p>Combine multiple PDF files into a single document.</p>
+                </a>
+                <div class="tool-card" data-tool="split-pdf">
+                    <div class="tool-icon">✂️</div>
+                    <h3>Split PDF</h3>
+                    <p>Extract pages or split a PDF into multiple files.</p>
+                </div>
+                <div class="tool-card" data-tool="compress-pdf">
+                    <div class="tool-icon">🗜️</div>
+                    <h3>Compress PDF</h3>
+                    <p>Reduce PDF file size while maintaining quality.</p>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-word">
+                    <div class="tool-icon">PW</div>
+                    <h3>PDF to Word</h3>
+                    <p>Convert PDF to editable Word (DOCX) documents.</p>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-powerpoint">
+                    <div class="tool-icon">PP</div>
+                    <h3>PDF to PowerPoint</h3>
+                    <p>Convert PDF to editable PowerPoint (PPTX) presentations.</p>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-excel">
+                    <div class="tool-icon">PE</div>
+                    <h3>PDF to Excel</h3>
+                    <p>Convert PDF tables into editable Excel (XLSX) spreadsheets.</p>
+                </div>
+                <div class="tool-card" data-tool="word-to-pdf">
+                    <div class="tool-icon">WP</div>
+                    <h3>Word to PDF</h3>
+                    <p>Convert Word (DOCX) documents to PDF files.</p>
+                </div>
+                <div class="tool-card" data-tool="powerpoint-to-pdf">
+                    <div class="tool-icon">PP</div>
+                    <h3>PowerPoint to PDF</h3>
+                    <p>Convert PowerPoint (PPTX) presentations to PDF.</p>
+                </div>
+                <div class="tool-card" data-tool="excel-to-pdf">
+                    <div class="tool-icon">EP</div>
+                    <h3>Excel to PDF</h3>
+                    <p>Convert Excel (XLSX) spreadsheets to PDF.</p>
+                </div>
+                <div class="tool-card" data-tool="edit-pdf">
+                    <div class="tool-icon">✏️</div>
+                    <h3>Edit PDF</h3>
+                    <p>Add text, images, shapes, and annotations to PDFs.</p>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-jpg">
+                    <div class="tool-icon">PJ</div>
+                    <h3>PDF to JPG</h3>
+                    <p>Convert PDF pages to JPG images or extract all images.</p>
+                </div>
+                <div class="tool-card" data-tool="jpg-to-pdf">
+                    <div class="tool-icon">JP</div>
+                    <h3>JPG to PDF</h3>
+                    <p>Convert JPG images to a PDF document.</p>
+                </div>
+                <div class="tool-card" data-tool="sign-pdf">
+                    <div class="tool-icon">✒️</div>
+                    <h3>Sign PDF</h3>
+                    <p>Add your digital signature to PDF documents.</p>
+                </div>
+                <div class="tool-card" data-tool="watermark-pdf">
+                    <div class="tool-icon">💧</div>
+                    <h3>Watermark PDF</h3>
+                    <p>Add text or image watermarks to your PDF files.</p>
+                </div>
+                <div class="tool-card" data-tool="rotate-pdf">
+                    <div class="tool-icon">🔄</div>
+                    <h3>Rotate PDF</h3>
+                    <p>Rotate pages within your PDF documents easily.</p>
+                </div>
+                <div class="tool-card" data-tool="html-to-pdf">
+                    <div class="tool-icon">🌐</div>
+                    <h3>HTML to PDF</h3>
+                    <p>Convert web pages (URLs or HTML code) to PDF.</p>
+                </div>
+                <div class="tool-card" data-tool="unlock-pdf">
+                    <div class="tool-icon">🔓</div>
+                    <h3>Unlock PDF</h3>
+                    <p>Remove password protection from PDF files (if you own it).</p>
+                </div>
+                <div class="tool-card" data-tool="protect-pdf">
+                    <div class="tool-icon">🔒</div>
+                    <h3>Protect PDF</h3>
+                    <p>Add password protection and encryption to your PDFs.</p>
+                </div>
+                <div class="tool-card" data-tool="organize-pdf">
+                    <div class="tool-icon">🗂️</div>
+                    <h3>Organize PDF</h3>
+                    <p>Reorder, delete, or add pages within a PDF.</p>
+                </div>
+                <div class="tool-card" data-tool="pdf-to-pdfa">
+                    <div class="tool-icon">PA</div>
+                    <h3>PDF to PDF/A</h3>
+                    <p>Convert PDF to PDF/A for long-term archiving.</p>
+                </div>
+                 <div class="tool-card" data-tool="repair-pdf">
+                    <div class="tool-icon">🛠️</div>
+                    <h3>Repair PDF</h3>
+                    <p>Attempt to fix and recover data from corrupted PDF files.</p>
+                </div>
+                <div class="tool-card" data-tool="page-numbers">
+                    <div class="tool-icon">#️⃣</div>
+                    <h3>Page Numbers</h3>
+                    <p>Add page numbers to your PDF documents.</p>
+                </div>
+                <div class="tool-card" data-tool="scan-to-pdf">
+                    <div class="tool-icon">📷</div>
+                    <h3>Scan to PDF</h3>
+                    <p>Convert scanned images or documents to PDF.</p>
+                </div>
+                <div class="tool-card" data-tool="ocr-pdf">
+                    <div class="tool-icon">📄</div>
+                    <h3>OCR PDF</h3>
+                    <p>Make scanned PDFs searchable and text selectable.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> PDFMasters. All rights reserved. For demonstration purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleButton = document.getElementById('theme-toggle');
+            const body = document.body;
+            const themeText = themeToggleButton.querySelector('.theme-text');
+            const currentTheme = localStorage.getItem('theme');
+
+            function applyTheme(theme) {
+                if (theme === 'animated') {
+                    body.classList.add('animated-theme');
+                    if (themeText) themeText.textContent = 'Default Theme';
+                } else {
+                    body.classList.remove('animated-theme');
+                    if (themeText) themeText.textContent = 'Animate Theme';
+                }
+            }
+
+            // Apply saved theme on load
+            if (currentTheme) {
+                applyTheme(currentTheme);
+            }
+
+            themeToggleButton.addEventListener('click', () => {
+                if (body.classList.contains('animated-theme')) {
+                    applyTheme('default');
+                    localStorage.setItem('theme', 'default');
+                } else {
+                    applyTheme('animated');
+                    localStorage.setItem('theme', 'animated');
+                }
+            });
+
+            // Update footer year
+            const currentYearSpan = document.getElementById('current-year');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+
+            // Optional: Add click listeners to tool cards (for future functionality)
+            const toolCards = document.querySelectorAll('.tool-card');
+            toolCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const toolName = card.dataset.tool;
+                    console.log(`Clicked on tool: ${toolName}`);
+                    // Here you would typically navigate to a page or show a modal for the specific tool
+                    // For example: window.location.href = `/${toolName}.html`;
+                    alert(`You clicked on ${toolName}. Actual tool functionality is not implemented in this demo.`);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html> -->
+
+
+
+
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -491,11 +954,11 @@
                     <h3>PDF to JPG</h3>
                     <p>Convert each PDF page into a JPG or extract all images in a PDF.</p>
                 </div>
-                 <a href="jpg-to-pdf.html" class="tool-card" data-tool="jpg-to-pdf">
-    <div class="tool-icon">JP</div>
-    <h3>JPG to PDF</h3>
-    <p>Combine JPG images into a PDF. Adjust orientation and margins.</p>
-</a>
+                 <div class="tool-card" data-tool="jpg-to-pdf">
+                    <div class="tool-icon">JP</div>
+                    <h3>JPG to PDF</h3>
+                    <p>Combine JPG images into a PDF. Adjust orientation and margins.</p>
+                </div>
                 <div class="tool-card" data-tool="sign-pdf">
                     <div class="tool-icon">✒️</div>
                     <h3>Sign PDF</h3>
@@ -563,7 +1026,7 @@
     <footer class="site-footer">
         <div class="container footer-content">
             <div>
-                <div class="footer-logo">PDF Converter</div>
+                <div class="footer-logo">PDFPal</div>
                 <ul class="footer-nav">
                     <li><a href="#">About Us</a></li>
                     <li><a href="#">All Tools</a></li>
@@ -575,7 +1038,7 @@
             <div class="social-links">
                 <a href="#" aria-label="Facebook">📘</a> <a href="#" aria-label="Twitter">🐦</a>  <a href="#" aria-label="LinkedIn">💼</a> </div>
             <div class="copyright">
-                &copy; <span id="current-year"></span> PDF Converter. All Rights Reserved.
+                &copy; <span id="current-year"></span> PDFPal. All Rights Reserved.
                 <br>Designed for demonstration purposes.
             </div>
         </div>
@@ -626,6 +1089,647 @@
                     alert(`Navigating to ${toolTitle}...\n(Actual tool functionality requires backend development)`);
                 });
             });
+        });
+    </script>
+
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One PDF Tools - Enhanced</title>
+    <style>
+        /* --- General Styles & Default (Dark) Theme --- */
+        :root {
+            --primary-black: #121212; /* Slightly softer black */
+            --secondary-black: #1e1e1e; /* For cards and elements */
+            --primary-yellow: #fdd835; /* Vibrant yellow */
+            --text-light: #e0e0e0;
+            --text-dark: #121212;
+            --border-color: #333333;
+            --header-bg-dark: #1a1a1a;
+            --footer-bg-dark: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font stack */
+            margin: 0;
+            background-color: var(--primary-black);
+            color: var(--text-light);
+            transition: background-color 0.7s ease, color 0.7s ease;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1280px; /* Wider max-width for larger screens */
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        a {
+            color: var(--primary-yellow);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:not(.tool-card):not(.logo-link):hover { /* Modified to exclude tool-card and logo-link from underline */
+            text-decoration: underline;
+        }
+
+        /* --- Enhanced Header --- */
+        .site-header {
+            background-color: var(--header-bg-dark);
+            padding: 15px 0;
+            border-bottom: 4px solid var(--primary-yellow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-link {
+            text-decoration: none;
+        }
+
+        .logo {
+            font-size: 2em; /* Increased size */
+            font-weight: 700; /* Bolder */
+            color: var(--primary-yellow);
+            letter-spacing: -1px; /* Slightly tighter letter spacing */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .logo .highlight { /* Optional: for a part of the logo if needed */
+            color: var(--text-light);
+        }
+
+
+        .theme-toggle-button {
+            background-color: var(--primary-yellow);
+            color: var(--text-dark);
+            border: 2px solid var(--primary-yellow); /* Border for definition */
+            padding: 8px 16px; /* Adjusted padding */
+            cursor: pointer;
+            border-radius: 30px; /* More rounded */
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .theme-toggle-button:hover {
+            box-shadow: 0 4px 12px rgba(253, 216, 53, 0.4);
+            transform: translateY(-2px);
+        }
+        .theme-toggle-button:active {
+            transform: translateY(0px);
+        }
+
+        .theme-toggle-button .icon {
+            margin-right: 10px;
+            display: inline-block;
+            width: 20px; /* Slightly larger icon */
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--text-dark);
+            position: relative;
+            transition: background-color 0.3s ease, transform 0.4s ease;
+        }
+         /* Basic moon shape */
+        .theme-toggle-button .icon::before {
+            content: '';
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--header-bg-dark); /* Color of the header to "cut out" the moon */
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+
+        /* --- Main Content Area --- */
+        main {
+            padding: 40px 0;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 50px;
+            color: var(--primary-yellow);
+            font-weight: 700;
+        }
+
+        /* --- Tool Grid --- */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Slightly larger minmax */
+            gap: 30px;
+        }
+
+        .tool-card { /* This is now an <a> tag */
+            background-color: var(--secondary-black);
+            border: 1px solid var(--border-color);
+            padding: 30px 25px; /* More padding */
+            text-align: center;
+            border-radius: 12px; /* Softer radius */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border-color 0.5s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the start */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            min-height: 220px; /* Ensure cards have a consistent minimum height */
+            text-decoration: none; /* Ensure no default link underline */
+            color: inherit; /* Inherit body text color, not link color */
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-yellow);
+            text-decoration: none; /* Ensure no underline on hover either */
+        }
+
+        .tool-card .tool-icon {
+            font-size: 3em; /* Larger icons */
+            margin-bottom: 20px;
+            color: var(--primary-yellow);
+            transition: color 0.5s ease;
+            height: 48px; /* Fixed height for icon area */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-card h3 {
+            font-size: 1.4em; /* Slightly larger title */
+            color: var(--primary-yellow); /* Explicitly set color */
+            margin-top: 0;
+            margin-bottom: 12px;
+            transition: color 0.5s ease;
+            font-weight: 600;
+        }
+
+        .tool-card p {
+            font-size: 0.95em; /* Slightly larger description */
+            color: #bbbbbb; /* Explicitly set color */
+            line-height: 1.6;
+            transition: color 0.5s ease;
+            flex-grow: 1; /* Allows paragraph to take available space */
+        }
+
+
+        /* --- Enhanced Footer --- */
+        .site-footer {
+            text-align: center;
+            padding: 40px 0 20px; /* More padding */
+            margin-top: 60px;
+            background-color: var(--footer-bg-dark);
+            border-top: 4px solid var(--primary-yellow);
+            font-size: 0.9em;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; /* Space between footer sections */
+        }
+
+        .footer-logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-yellow);
+            margin-bottom: 10px;
+        }
+
+        .footer-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center;
+            gap: 15px 30px; /* Row and column gap */
+        }
+        .footer-nav li a {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .footer-nav li a:hover { /* This hover can keep its underline */
+            color: var(--primary-yellow);
+            text-decoration: underline;
+        }
+
+        .social-links {
+            margin-top: 10px;
+        }
+        .social-links a {
+            margin: 0 12px;
+            font-size: 1.6em; /* Larger social icons */
+            color: var(--text-light);
+            display: inline-block; /* For better hover effects */
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .social-links a:hover { /* This hover can keep its underline/effect */
+            color: var(--primary-yellow);
+            transform: scale(1.2);
+        }
+
+        .copyright {
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: #999999;
+        }
+
+        /* === Animated Theme (When "ON") === */
+        body.animated-theme {
+            --primary-black: #f4f4f8; /* Lighter, slightly cool background */
+            --secondary-black: #ffffff;
+            --primary-yellow-animated-start: #ffeb3b;
+            --primary-yellow-animated-mid: #ffc107;
+            --primary-yellow-animated-end: #ff9800;
+            --text-light: #2c3e50; /* Darker, richer text */
+            --text-dark: #ffffff;
+            --border-color: #e0e0e0;
+            --header-bg-dark: #34495e; /* Deep blue-grey header */
+            --footer-bg-dark: #2c3e50; /* Even darker footer */
+
+            background: linear-gradient(135deg,
+                #ffd32a, /* Brighter Yellow */
+                #ff9f43, /* Orange */
+                #ef476f, /* Pinkish Red */
+                #06d6a0, /* Teal/Green */
+                #118ab2  /* Blue */
+            );
+            background-size: 500% 500%;
+            animation: vividGradientFlow 25s ease infinite alternate; /* Alternate direction */
+            color: var(--text-light);
+        }
+
+        @keyframes vividGradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+
+        .animated-theme .site-header {
+            background-color: var(--header-bg-dark);
+            border-bottom-color: var(--primary-yellow-animated-mid);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .animated-theme .logo {
+            color: var(--primary-yellow-animated-mid);
+        }
+        .animated-theme .logo .highlight {
+            color: #ecf0f1; /* Light grey for highlight */
+        }
+
+        .animated-theme .theme-toggle-button {
+            background-color: #ecf0f1; /* Light button */
+            color: var(--header-bg-dark); /* Dark text on button */
+            border-color: var(--header-bg-dark);
+        }
+        .animated-theme .theme-toggle-button:hover {
+             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .animated-theme .theme-toggle-button .icon {
+            background-color: var(--primary-yellow-animated-mid); /* Sun color */
+        }
+        /* Sun shape */
+        .animated-theme .theme-toggle-button .icon::before {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background: transparent; /* Remove moon cutout */
+        }
+
+
+        .animated-theme .main-title {
+            color: #ffffff;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.3);
+        }
+
+        .animated-theme .tool-card { /* This is an <a> tag */
+            background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque */
+            border: 1px solid var(--border-color);
+            box-shadow: 0 6px 18px rgba(44, 62, 80, 0.15);
+            color: inherit; /* Ensure it doesn't take general 'a' color from animated theme */
+            text-decoration: none;
+        }
+        .animated-theme .tool-card:hover {
+            box-shadow: 0 10px 25px rgba(44, 62, 80, 0.2);
+            border-color: var(--primary-yellow-animated-mid);
+            text-decoration: none;
+        }
+        .animated-theme .tool-card .tool-icon {
+            color: #e74c3c; /* Vibrant red for icons */
+        }
+        .animated-theme .tool-card h3 {
+            color: #2c3e50; /* Dark blue-grey heading */
+        }
+        .animated-theme .tool-card p {
+            color: #34495e; /* Slightly lighter blue-grey text */
+        }
+
+        .animated-theme .site-footer {
+            background-color: var(--footer-bg-dark);
+            border-top-color: var(--primary-yellow-animated-mid);
+            color: #bdc3c7; /* Light grey text */
+        }
+        .animated-theme .footer-logo {
+            color: var(--primary-yellow-animated-mid);
+        }
+        .animated-theme .footer-nav li a {
+            color: #ecf0f1; /* Almost white links */
+        }
+        .animated-theme .footer-nav li a:hover {
+            color: var(--primary-yellow-animated-mid);
+        }
+        .animated-theme .social-links a {
+            color: #ecf0f1;
+        }
+        .animated-theme .social-links a:hover {
+            color: var(--primary-yellow-animated-mid);
+        }
+        .animated-theme .copyright {
+            color: #95a5a6; /* Medium grey */
+        }
+
+        /* Responsive adjustments for header */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 1.6em;
+            }
+            .theme-toggle-button .theme-text {
+                display: none; /* Hide text on smaller screens, icon is enough */
+            }
+            .theme-toggle-button .icon {
+                margin-right: 0;
+            }
+            .main-title {
+                font-size: 2.2em;
+            }
+            .tool-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+        @media (max-width: 480px) {
+            .tool-grid {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+            }
+             .logo {
+                font-size: 1.4em;
+            }
+            .theme-toggle-button {
+                padding: 6px 10px;
+            }
+            .theme-toggle-button .icon {
+                width: 18px;
+                height: 18px;
+            }
+            .main-title {
+                font-size: 1.8em;
+                margin-bottom: 30px;
+            }
+            .footer-nav {
+                flex-direction: column; /* Stack nav links */
+                gap: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a href="#" class="logo-link">
+                <div class="logo">PDF<span class="highlight">Pal</span></div>
+            </a>
+            <button id="theme-toggle" class="theme-toggle-button" aria-label="Toggle Theme">
+                <span class="icon"></span>
+                <span class="theme-text">Animate</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="main-title">The Ultimate PDF Toolkit</h1>
+
+            <div class="tool-grid">
+                <a href="#" class="tool-card" data-tool="merge-pdf">
+                    <div class="tool-icon">➕</div>
+                    <h3>Merge PDF</h3>
+                    <p>Combine multiple PDF files into a single, organized document seamlessly.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="split-pdf">
+                    <div class="tool-icon">✂️</div>
+                    <h3>Split PDF</h3>
+                    <p>Extract specific pages or divide a PDF into separate, smaller files.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="compress-pdf">
+                    <div class="tool-icon">🗜️</div>
+                    <h3>Compress PDF</h3>
+                    <p>Reduce PDF file size significantly while maintaining optimal quality.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="pdf-to-word">
+                    <div class="tool-icon">PW</div>
+                    <h3>PDF to Word</h3>
+                    <p>Convert your PDF files into editable Word (DOCX) documents quickly.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="pdf-to-powerpoint">
+                    <div class="tool-icon">PP</div>
+                    <h3>PDF to PowerPoint</h3>
+                    <p>Transform PDFs into dynamic PowerPoint (PPTX) presentations.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="pdf-to-excel">
+                    <div class="tool-icon">PE</div>
+                    <h3>PDF to Excel</h3>
+                    <p>Extract data from PDFs directly into Excel (XLSX) spreadsheets.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="word-to-pdf">
+                    <div class="tool-icon">WP</div>
+                    <h3>Word to PDF</h3>
+                    <p>Convert Word documents (DOCX) to universal PDF format easily.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="powerpoint-to-pdf">
+                    <div class="tool-icon">PP</div>
+                    <h3>PowerPoint to PDF</h3>
+                    <p>Change PowerPoint slides (PPTX) into shareable PDF files.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="excel-to-pdf">
+                    <div class="tool-icon">EP</div>
+                    <h3>Excel to PDF</h3>
+                    <p>Turn Excel spreadsheets (XLSX) into professional PDF documents.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="edit-pdf">
+                    <div class="tool-icon">✏️</div>
+                    <h3>Edit PDF</h3>
+                    <p>Add text, images, shapes, and freehand annotations to your PDFs.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="pdf-to-jpg">
+                    <div class="tool-icon">PJ</div>
+                    <h3>PDF to JPG</h3>
+                    <p>Convert each PDF page into a JPG or extract all images in a PDF.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="jpg-to-pdf">
+                    <div class="tool-icon">JP</div>
+                    <h3>JPG to PDF</h3>
+                    <p>Combine JPG images into a PDF. Adjust orientation and margins.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="sign-pdf">
+                    <div class="tool-icon">✒️</div>
+                    <h3>Sign PDF</h3>
+                    <p>Sign PDFs yourself or request electronic signatures from others securely.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="watermark-pdf">
+                    <div class="tool-icon">💧</div>
+                    <h3>Watermark PDF</h3>
+                    <p>Stamp an image or text over your PDF documents in seconds.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="rotate-pdf">
+                    <div class="tool-icon">🔄</div>
+                    <h3>Rotate PDF</h3>
+                    <p>Rotate your PDFs as needed. Rotate multiple PDFs at once!</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="html-to-pdf">
+                    <div class="tool-icon">🌐</div>
+                    <h3>HTML to PDF</h3>
+                    <p>Convert webpages in HTML to PDF. Paste URL to convert.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="unlock-pdf">
+                    <div class="tool-icon">🔓</div>
+                    <h3>Unlock PDF</h3>
+                    <p>Remove PDF password, enabling full access and use (if owned).</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="protect-pdf">
+                    <div class="tool-icon">🔒</div>
+                    <h3>Protect PDF</h3>
+                    <p>Secure PDF files with a password. Encrypt for unauthorized access.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="organize-pdf">
+                    <div class="tool-icon">🗂️</div>
+                    <h3>Organize PDF</h3>
+                    <p>Sort, add, remove, or reorder pages within your PDF documents.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="pdf-to-pdfa">
+                    <div class="tool-icon">PA</div>
+                    <h3>PDF to PDF/A</h3>
+                    <p>Convert PDF to PDF/A for ISO-standardized long-term archiving.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="repair-pdf">
+                    <div class="tool-icon">🛠️</div>
+                    <h3>Repair PDF</h3>
+                    <p>Attempt to fix damaged PDFs and recover data from corrupt files.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="page-numbers">
+                    <div class="tool-icon">#️⃣</div>
+                    <h3>Page Numbers</h3>
+                    <p>Add page numbers to PDFs with custom position and typography.</p>
+                </a>
+                 <a href="#" class="tool-card" data-tool="scan-to-pdf">
+                    <div class="tool-icon">📷</div>
+                    <h3>Scan to PDF</h3>
+                    <p>Convert scanned paper documents and images into PDF files.</p>
+                </a>
+                <a href="#" class="tool-card" data-tool="ocr-pdf">
+                    <div class="tool-icon">📄</div>
+                    <h3>OCR PDF</h3>
+                    <p>Make scanned PDFs and images into searchable and selectable text.</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div>
+                <div class="footer-logo">PDFPal</div>
+                <ul class="footer-nav">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">All Tools</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook">📘</a> <a href="#" aria-label="Twitter">🐦</a>  <a href="#" aria-label="LinkedIn">💼</a> </div>
+            <div class="copyright">
+                © <span id="current-year"></span> PDFPal. All Rights Reserved.
+                <br>Designed for demonstration purposes.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleButton = document.getElementById('theme-toggle');
+            const body = document.body;
+            const themeTextSpan = themeToggleButton.querySelector('.theme-text'); // Target the span for text change
+            const currentTheme = localStorage.getItem('theme');
+
+            function applyTheme(theme) {
+                if (theme === 'animated') {
+                    body.classList.add('animated-theme');
+                    if (themeTextSpan) themeTextSpan.textContent = 'Default'; // Shorter text
+                } else {
+                    body.classList.remove('animated-theme');
+                    if (themeTextSpan) themeTextSpan.textContent = 'Animate';
+                }
+            }
+
+            if (currentTheme) {
+                applyTheme(currentTheme);
+            } else { // Default to non-animated if no theme saved
+                 applyTheme('default');
+            }
+
+            themeToggleButton.addEventListener('click', () => {
+                let newTheme = 'default';
+                if (!body.classList.contains('animated-theme')) {
+                    newTheme = 'animated';
+                }
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            const currentYearSpan = document.getElementById('current-year');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+
+            // The JavaScript for tool card alerts has been removed.
+            // const toolCards = document.querySelectorAll('.tool-card');
+            // toolCards.forEach(card => {
+            //     card.addEventListener('click', () => {
+            //         const toolName = card.dataset.tool || 'Selected Tool';
+            //         const toolTitle = card.querySelector('h3') ? card.querySelector('h3').textContent : toolName;
+            //         alert(`Navigating to ${toolTitle}...\n(Actual tool functionality requires backend development)`);
+            //     });
+            // });
         });
     </script>
 
